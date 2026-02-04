@@ -9,17 +9,17 @@ uv sync
 # Create an admin user
 uv run python scripts/create_admin.py --username admin --password yourpassword
 
-# Run the application
-uv run python run.py
+# Start the application
+uv run python start.py
 ```
 
-Then visit http://localhost:8000 and log in with your credentials.
+Then visit <http://localhost:8000> and log in with your credentials.
 
 ## Project Structure
 
 ```
 ad-hoc-creator/
-├── run.py              # Application entry point
+├── start.py            # Application entry point
 ├── scripts/            # Utility scripts
 │   └── create_admin.py
 ├── app/                # Main application package
