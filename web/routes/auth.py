@@ -1,10 +1,10 @@
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from slowapi import Limiter
-from slowapi.util import get_remote_address
+from slowapi.util import get_ipaddr, get_remote_address
 from sqlalchemy.orm import Session
 
 from ..auth import authenticate_user, create_access_token, get_current_user
@@ -32,6 +32,8 @@ class UserResponse(BaseModel):
     id: int
     username: str
     is_active: bool
+    last_logged_in: datetime | None = None
+    last_logged_from: str | None = None
 
     class Config:
         from_attributes = True
@@ -55,6 +57,11 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+    # Update last login info
+    user.last_logged_in = datetime.now(timezone.utc)
+    user.last_logged_from = get_ipaddr(request)
+    db.commit()
+
     access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
     access_token = create_access_token(
         data={"sub": str(user.id)}, expires_delta=access_token_expires
@@ -70,7 +77,7 @@ async def login(
         secure=settings.secure_cookies,  # Controlled by SECURE_COOKIES environment variable
     )
 
-    logger.info(f"Login: {user.username}")
+    logger.info(f"Login: {user.username} from {user.last_logged_from}")
     return {"access_token": access_token, "token_type": "bearer"}
 
 

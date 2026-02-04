@@ -43,6 +43,10 @@ class Settings(BaseSettings):
         default=ROOT_PATH / "logs",
         description="Logging directory path",
     )
+    servers_dir: Path = Field(
+        default=ROOT_PATH / "servers",
+        description="Server configs path",
+    )
 
     # Database Configuration
     database_url: str = Field(
