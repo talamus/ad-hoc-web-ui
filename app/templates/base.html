@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ad Hoc Web UI{% endblock %}</title>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="stylesheet" href="/static/css/style.css">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="container">
+                <h1 class="logo">Ad Hoc Web UI</h1>
+                {% block nav %}{% endblock %}
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Tero Niemi</p>
+        </div>
+    </footer>
+
+    <script src="/static/js/auth.js"></script>
+    <script>
+        // Automatically check authentication on page load for protected pages
+        window.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

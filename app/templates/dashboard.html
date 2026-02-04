@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block nav %}
+<div class="nav-user">
+    <span>Welcome, {{ user.username }}</span>
+    <button onclick="logout()" class="btn btn-secondary">Logout</button>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h2>Server Management</h2>
+
+    <div class="server-list">
+        <p class="placeholder">Server list will appear here...</p>
+        <!-- Server list will be implemented later -->
+    </div>
+</div>
+{% endblock %}

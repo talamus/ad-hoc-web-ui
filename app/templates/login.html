@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<body data-public-page="true">
+<div class="auth-container">
+    <div class="auth-box">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+        </form>
+    </div>
+</div>
+</body>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const errorDiv = document.getElementById('errorMessage');
+
+    try {
+        const formData = new URLSearchParams();
+        formData.append('username', username);
+        formData.append('password', password);
+
+        // Get CSRF token from cookie
+        const csrfToken = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrf_token='))
+            ?.split('=')[1];
+
+        const headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        };
+
+        // Add CSRF token if available
+        if (csrfToken) {
+            headers['X-CSRF-Token'] = csrfToken;
+        }
+
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: headers,
+            body: formData
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('access_token', data.access_token);
+            window.location.href = '/dashboard';
+        } else {
+            const error = await response.json();
+            errorDiv.textContent = error.detail || 'Login failed';
+            errorDiv.style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Login error:', error);
+        errorDiv.textContent = 'An error occurred. Please try again.';
+        errorDiv.style.display = 'block';
+    }
+});
+</script>
+{% endblock %}
