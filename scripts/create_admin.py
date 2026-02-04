@@ -17,10 +17,10 @@ os.chdir(project_root)
 sys.path.insert(0, str(project_root))
 
 from sqlalchemy.orm import Session  # noqa: E402
-from app.auth import hash_password  # noqa: E402
-from app.config import settings  # noqa: E402
-from app.database import SessionLocal, User, init_db  # noqa: E402
-from app.logging import get_logger  # noqa: E402
+from web.auth import hash_password  # noqa: E402
+from web.config import settings  # noqa: E402
+from web.database import SessionLocal, User, init_db  # noqa: E402
+from web.logging import get_logger  # noqa: E402
 
 # Initialize logger using app's logging configuration
 logger = get_logger("create_admin")

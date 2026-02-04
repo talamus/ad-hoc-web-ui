@@ -1,8 +1,13 @@
 """Application configuration using pydantic-settings"""
 
+from pathlib import Path
 from typing import Optional
+
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Project root directory (parent of web/)
+ROOT_PATH = Path(__file__).parent.parent
 
 
 class Settings(BaseSettings):
@@ -34,10 +39,15 @@ class Settings(BaseSettings):
     # Application Settings
     app_name: str = Field(default="Ad Hoc Web UI", description="Application name")
     log_level: str = Field(default="INFO", description="Logging level")
+    log_dir: Path = Field(
+        default=ROOT_PATH / "logs",
+        description="Logging directory path",
+    )
 
     # Database Configuration
     database_url: str = Field(
-        default="sqlite:///./adhoc_users.db", description="Database URL"
+        default=f"sqlite:///{ROOT_PATH / 'adhoc_users.db'}",
+        description="Database URL",
     )
 
     model_config = SettingsConfigDict(

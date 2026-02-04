@@ -1,5 +1,6 @@
 """Main application module for Ad Hoc Web UI"""
 
+import os
 import re
 import time
 import uvicorn
@@ -11,15 +12,16 @@ from fastapi.templating import Jinja2Templates
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
-from starlette_csrf import CSRFMiddleware
+from starlette_csrf.middleware import CSRFMiddleware
 
 from .__init__ import __version__
 from .config import settings
 from .database import init_db
 from .routes import auth, pages
+from .logging import get_logger, UVICORN_LOG_CONFIG
 
-# Application startup time
 startup_time = time.time()
+logger = get_logger(__name__)
 
 
 @asynccontextmanager
@@ -76,14 +78,16 @@ async def health_check():
 
 def start():
     """Run the application"""
-    from .logging import UVICORN_LOG_CONFIG
+    working_dir = Path(__file__).parent.parent
+    os.chdir(working_dir)
 
-    global startup_time
+    logger.info(f"Working directory set to: {working_dir}")
 
     uvicorn.run(
-        "app.main:app",
+        "web.main:app",
         host=settings.host,
         port=settings.port,
         reload=settings.reload,
+        reload_dirs=["web"] if settings.reload else None,
         log_config=UVICORN_LOG_CONFIG,
     )

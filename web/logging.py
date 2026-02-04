@@ -6,10 +6,10 @@ from pathlib import Path
 
 from .config import settings
 
-# Logging Configuration
-LOG_DIR = Path("logs")
+# Log file location
+LOG_DIR = settings.log_dir
 LOG_DIR.mkdir(exist_ok=True)
-LOG_FILE = LOG_DIR / "app.log"
+LOG_FILE = LOG_DIR / "ad-hoc.log"
 
 # Log format settings
 log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
