@@ -3,12 +3,13 @@
 from datetime import datetime
 from sqlalchemy import Boolean, Column, DateTime, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import sessionmaker
 from .config import settings
 from .logging import get_logger
 
 Base = declarative_base()
 logger = get_logger(__name__)
+
 
 class User(Base):
     """User model for authentication"""

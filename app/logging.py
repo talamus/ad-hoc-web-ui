@@ -37,10 +37,12 @@ root_logger.setLevel(getattr(logging, settings.log_level))
 root_logger.addHandler(console_handler)
 root_logger.addHandler(file_handler)
 
+
 # Function to get a named logger that uses the root logger's configuration
 def get_logger(name: str) -> logging.Logger:
     """Get a logger with the specified name"""
     return root_logger.getChild(name)
+
 
 # Silence noisy loggers
 logging.getLogger("passlib").setLevel(logging.ERROR)

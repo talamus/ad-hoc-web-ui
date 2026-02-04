@@ -5,7 +5,7 @@ import time
 import uvicorn
 from contextlib import asynccontextmanager
 from pathlib import Path
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -20,6 +20,7 @@ from .routes import auth, pages
 
 # Application startup time
 startup_time = time.time()
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -65,15 +66,18 @@ pages.set_templates(templates)
 app.include_router(auth.router)
 app.include_router(pages.router)
 
+
+# Define health check endpoint
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
-    return {"status": "ok", "uptime": time.time() - startup_time}
+    return {"status": "OK", "uptime": int(time.time() - startup_time)}
 
 
-def main():
+def start():
     """Run the application"""
     from .logging import UVICORN_LOG_CONFIG
+
     global startup_time
 
     uvicorn.run(
@@ -83,7 +87,3 @@ def main():
         reload=settings.reload,
         log_config=UVICORN_LOG_CONFIG,
     )
-
-
-if __name__ == "__main__":
-    main()

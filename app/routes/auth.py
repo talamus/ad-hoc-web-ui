@@ -43,7 +43,7 @@ async def login(
     request: Request,
     response: Response,
     form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Login endpoint - accepts username and password, returns JWT token"""
     user = authenticate_user(db, form_data.username, form_data.password)
@@ -67,7 +67,7 @@ async def login(
         httponly=True,
         max_age=settings.access_token_expire_minutes * 60,  # Convert to seconds
         samesite="lax",
-        secure=settings.secure_cookies  # Controlled by SECURE_COOKIES environment variable
+        secure=settings.secure_cookies,  # Controlled by SECURE_COOKIES environment variable
     )
 
     logger.info(f"Login: {user.username}")
@@ -75,17 +75,14 @@ async def login(
 
 
 @router.post("/logout")
-async def logout(
-    response: Response,
-    current_user: User = Depends(get_current_user)
-):
+async def logout(response: Response, current_user: User = Depends(get_current_user)):
     """Logout endpoint - clears authentication cookie"""
     # Clear the authentication cookie
     response.delete_cookie(
         key="access_token",
         httponly=True,
         samesite="lax",
-        secure=settings.secure_cookies
+        secure=settings.secure_cookies,
     )
 
     logger.info(f"Logout: {current_user.username}")

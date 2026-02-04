@@ -23,14 +23,15 @@ ad-hoc-creator/
 ├── scripts/            # Utility scripts
 │   └── create_admin.py
 ├── app/                # Main application package
-│   ├── main.py        # FastAPI app setup
-│   ├── config.py      # Configuration
-│   ├── database.py    # Database models
-│   ├── auth.py        # Authentication
-│   ├── routes/        # API and page routes
-│   ├── templates/     # Jinja2 templates
-│   └── static/        # CSS and JavaScript
-└── docs/              # Documentation
+│   ├── main.py         # FastAPI app setup
+│   ├── config.py       # Configuration
+│   ├── logging.py      # Unified logging
+│   ├── database.py     # Database models
+│   ├── auth.py         # Authentication
+│   ├── routes/         # API and page routes
+│   ├── templates/      # Jinja2 templates
+│   └── static/         # Static files
+└── docs/               # Documentation
     ├── PLAN.md
     └── GETTING_STARTED.md
 ```

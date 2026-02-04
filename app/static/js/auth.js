@@ -32,11 +32,19 @@ async function logout() {
     // Try to call logout endpoint if we have a token
     if (token) {
         try {
+            console.info('Logging out user');
+            const csrfToken = getCsrfToken();
+            const headers = {
+                'Authorization': `Bearer ${token}`
+            };
+
+            if (csrfToken) {
+                headers['X-CSRF-Token'] = csrfToken;
+            }
+
             await fetch('/api/auth/logout', {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: headers
             });
         } catch (error) {
             console.error('Logout API call failed:', error);

@@ -16,11 +16,11 @@ os.chdir(project_root)
 # Add project root to path to import app modules
 sys.path.insert(0, str(project_root))
 
-from sqlalchemy.orm import Session
-from app.auth import hash_password
-from app.config import settings
-from app.database import SessionLocal, User, init_db
-from app.logging import get_logger
+from sqlalchemy.orm import Session  # noqa: E402
+from app.auth import hash_password  # noqa: E402
+from app.config import settings  # noqa: E402
+from app.database import SessionLocal, User, init_db  # noqa: E402
+from app.logging import get_logger  # noqa: E402
 
 # Initialize logger using app's logging configuration
 logger = get_logger("create_admin")
@@ -43,7 +43,9 @@ def create_admin_user(username: str, password: str) -> None:
         # Create new user
         logger.info(f"Creating admin user: {username}")
         hashed_password = hash_password(password)
-        new_user = User(username=username, hashed_password=hashed_password, is_active=True)
+        new_user = User(
+            username=username, hashed_password=hashed_password, is_active=True
+        )
 
         db.add(new_user)
         db.commit()
