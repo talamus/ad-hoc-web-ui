@@ -2,7 +2,7 @@
 
 import multiprocessing
 from web.logging import LOG_CONFIG
-from web.config import settings
+from web.settings import settings
 
 bind = f"{settings.host}:{settings.port}"
 workers = multiprocessing.cpu_count() * 2 + 1

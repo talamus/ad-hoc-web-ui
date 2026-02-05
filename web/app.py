@@ -14,7 +14,7 @@ from slowapi.util import get_ipaddr
 from starlette_csrf.middleware import CSRFMiddleware
 
 from . import __version__
-from .config import settings
+from .settings import settings
 from .database import init_db
 from .routes import auth, pages
 

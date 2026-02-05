@@ -9,7 +9,7 @@ from slowapi.util import get_ipaddr
 from sqlalchemy.orm import Session
 
 from ..auth import authenticate_user, create_access_token, get_current_user
-from ..config import settings
+from ..settings import settings
 from ..database import User, get_db
 
 logger = logging.getLogger(__name__)

@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from sqlalchemy import Boolean, Column, DateTime, Integer, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from .config import settings
+from .settings import settings
 
 logger = logging.getLogger(__name__)
 Base = declarative_base()
