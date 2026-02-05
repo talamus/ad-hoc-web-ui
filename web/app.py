@@ -21,6 +21,7 @@ from .routes import auth, pages
 logger = logging.getLogger(__name__)
 limiter = Limiter(key_func=get_ipaddr, default_limits=["200/minute"])
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan context manager for startup and shutdown events"""
@@ -33,7 +34,10 @@ async def lifespan(app: FastAPI):
     yield
 
     # Shutdown:
-    logger.info(f"Shutting down worker, uptime: {int(time.time() - app.state.startup_time)}s")
+    logger.info(
+        f"Shutting down worker, uptime: {int(time.time() - app.state.startup_time)}s"
+    )
+
 
 # Initialize FastAPI app
 app = FastAPI(title=settings.app_name, version=__version__, lifespan=lifespan)

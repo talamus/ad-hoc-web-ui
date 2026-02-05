@@ -28,6 +28,7 @@ from web.auth import hash_password  # noqa: E402
 from web.settings import settings  # noqa: E402
 from web.database import SessionLocal, User, init_db  # noqa: E402
 
+
 def create_admin_user(username: str, password: str) -> None:
     """Create an admin user in the database"""
     logger.info("Initializing database...")

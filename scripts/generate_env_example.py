@@ -13,7 +13,11 @@ from web.settings import ROOT_PATH, Settings  # noqa: E402
 
 def generate_env_example() -> str:
     """Generate .env.example content from Settings field definitions."""
-    lines = ["# Configuration for Ad Hoc Web UI", "# Copy to .env and modify as needed", ""]
+    lines = [
+        "# Configuration for Ad Hoc Web UI",
+        "# Copy to .env and modify as needed",
+        "",
+    ]
 
     for name, field_info in Settings.model_fields.items():
         description = field_info.description or ""
