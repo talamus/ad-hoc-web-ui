@@ -8,9 +8,6 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_ipaddr
 from starlette_csrf.middleware import CSRFMiddleware
 
 from . import __version__
@@ -19,7 +16,6 @@ from .database import init_db
 from .routes import auth, pages
 
 logger = logging.getLogger(__name__)
-limiter = Limiter(key_func=get_ipaddr, default_limits=["200/minute"])
 
 
 @asynccontextmanager
@@ -42,10 +38,6 @@ async def lifespan(app: FastAPI):
 # Initialize FastAPI app
 app = FastAPI(title=settings.app_name, version=__version__, lifespan=lifespan)
 
-# Add rate limit error handler
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-
 # Add CSRF protection middleware
 app.add_middleware(
     CSRFMiddleware,
@@ -60,8 +52,9 @@ app.add_middleware(
 # Get the app directory path
 APP_DIR = Path(__file__).parent
 
-# Mount static files
-app.mount("/static", StaticFiles(directory=str(APP_DIR / "static")), name="static")
+# Mount static files if required
+if settings.serve_static_files:
+    app.mount("/static", StaticFiles(directory=str(APP_DIR / "static")), name="static")
 
 # Configure Jinja2 templates
 templates = Jinja2Templates(directory=str(APP_DIR / "templates"))

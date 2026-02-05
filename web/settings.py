@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     host: str = Field(default="0.0.0.0", description="Server host")
     port: int = Field(default=8000, description="Server port")
     reload: bool = Field(default=True, description="Enable auto-reload")
+    serve_static_files: bool = Field(default=True, description="Serve static files")
 
     # Application Settings
     app_name: str = Field(default="Ad Hoc Web UI", description="Application name")

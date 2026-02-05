@@ -4,8 +4,6 @@ from datetime import datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
-from slowapi import Limiter
-from slowapi.util import get_ipaddr
 from sqlalchemy.orm import Session
 
 from ..auth import authenticate_user, create_access_token, get_current_user
@@ -14,7 +12,6 @@ from ..database import User, get_db
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/auth", tags=["authentication"])
-limiter = Limiter(key_func=get_ipaddr)
 
 
 class Token(BaseModel):
@@ -38,7 +35,6 @@ class UserResponse(BaseModel):
 
 
 @router.post("/login", response_model=Token)
-@limiter.limit("5/minute")
 async def login(
     request: Request,
     response: Response,
@@ -57,7 +53,7 @@ async def login(
 
     # Update last login info
     user.last_logged_in = datetime.now(timezone.utc)
-    user.last_logged_from = get_ipaddr(request)
+    user.last_logged_from = request.client.host if request.client else None
     db.commit()
 
     access_token_expires = timedelta(minutes=settings.access_token_expire_minutes)
