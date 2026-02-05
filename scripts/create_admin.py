@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 """Script to create an admin user"""
 
+import logging
 import argparse
 import getpass
 import os
 import sys
 from pathlib import Path
+
+logger = logging.getLogger("create_admin")
+
+# Silence noisy loggers
+logging.getLogger("passlib").setLevel(logging.ERROR)
+logging.getLogger("passlib.handlers.bcrypt").setLevel(logging.ERROR)
 
 # Get the project root directory (parent of scripts/)
 project_root = Path(__file__).parent.parent
@@ -20,11 +27,6 @@ from sqlalchemy.orm import Session  # noqa: E402
 from web.auth import hash_password  # noqa: E402
 from web.config import settings  # noqa: E402
 from web.database import SessionLocal, User, init_db  # noqa: E402
-from web.logging import get_logger  # noqa: E402
-
-# Initialize logger using app's logging configuration
-logger = get_logger("create_admin")
-
 
 def create_admin_user(username: str, password: str) -> None:
     """Create an admin user in the database"""

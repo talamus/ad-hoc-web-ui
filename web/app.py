@@ -2,6 +2,7 @@
 
 import re
 import time
+import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
 from fastapi import FastAPI
@@ -9,30 +10,30 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
+from slowapi.util import get_ipaddr
 from starlette_csrf.middleware import CSRFMiddleware
 
 from . import __version__
 from .config import settings
 from .database import init_db
 from .routes import auth, pages
-from .logging import get_logger
 
-startup_time = time.time()
-logger = get_logger(__name__)
-
+logger = logging.getLogger(__name__)
+limiter = Limiter(key_func=get_ipaddr, default_limits=["200/minute"])
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan context manager for startup and shutdown events"""
-    # Startup: Initialize database
+
+    # Startup:
+    logger.info(f"Starting up worker for {settings.app_name} (version {__version__})")
+    app.state.startup_time = time.time()
     init_db()
+
     yield
-    # Shutdown: cleanup if needed
 
-
-# Initialize rate limiter
-limiter = Limiter(key_func=get_remote_address, default_limits=["200/minute"])
+    # Shutdown:
+    logger.info(f"Shutting down worker, uptime: {int(time.time() - app.state.startup_time)}s")
 
 # Initialize FastAPI app
 app = FastAPI(title=settings.app_name, version=__version__, lifespan=lifespan)
@@ -71,7 +72,4 @@ app.include_router(pages.router)
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
-    return {"status": "OK", "uptime": int(time.time() - startup_time)}
-
-
-
+    return {"status": "OK", "uptime": int(time.time() - app.state.startup_time)}

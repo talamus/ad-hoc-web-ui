@@ -1,47 +1,51 @@
 """Logging configuration"""
 
+import json
 import logging
-from logging.handlers import RotatingFileHandler
-from pathlib import Path
-
+from datetime import datetime, timezone
+from typing import Any
 from .config import settings
 
-# Log file location
-LOG_DIR = settings.log_dir
-LOG_DIR.mkdir(exist_ok=True)
-LOG_FILE = LOG_DIR / "ad-hoc.log"
 
-# Log format settings
-log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-date_format = "%Y-%m-%d %H:%M:%S"
-
-# Create formatter
-formatter = logging.Formatter(log_format, datefmt=date_format)
-
-# Console handler
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(formatter)
-
-# File handler with rotation (10MB max, keep 5 backup files)
-file_handler = RotatingFileHandler(
-    LOG_FILE,
-    maxBytes=10 * 1024 * 1024,  # 10MB
-    backupCount=5,
-    encoding="utf-8",
-)
-file_handler.setFormatter(formatter)
-
-# Configure root logger with console and file handlers
-root_logger = logging.getLogger()
-root_logger.setLevel(getattr(logging, settings.log_level))
-root_logger.addHandler(console_handler)
-root_logger.addHandler(file_handler)
-
-# Function to get a named logger that uses the root logger's configuration
-def get_logger(name: str) -> logging.Logger:
-    """Get a logger with the specified name"""
-    return root_logger.getChild(name)
+class JSONFormatter(logging.Formatter):
+    """Custom JSON log formatter"""
+    def format(self, record: logging.LogRecord) -> str:
+        log_data: dict[str, Any] = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "level": record.levelname,
+            "logger": record.name,
+            "message": record.getMessage(),
+        }
+        if record.exc_info:
+            log_data["exception"] = self.formatException(record.exc_info)
+        return json.dumps(log_data, default=str)
 
 # Silence noisy loggers
 logging.getLogger("passlib").setLevel(logging.ERROR)
 logging.getLogger("passlib.handlers.bcrypt").setLevel(logging.ERROR)
+
+# Reusable config dict for both uvicorn and gunicorn
+LOG_CONFIG = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json": {"()": JSONFormatter},
+        "default": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"},
+    },
+    "handlers": {
+        "default": {
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",
+            "formatter": settings.log_format if settings.log_format == "json" else "default",
+        },
+    },
+    "root": {"handlers": ["default"], "level": settings.log_level},
+    "loggers": {
+        "uvicorn": {"handlers": ["default"], "level": settings.log_level, "propagate": False},
+        "uvicorn.error": {"handlers": ["default"], "level": settings.log_level, "propagate": False},
+        "uvicorn.access": {"handlers": ["default"], "level": settings.log_level, "propagate": False},
+        "gunicorn": {"handlers": ["default"], "level": settings.log_level, "propagate": False},
+        "gunicorn.error": {"handlers": ["default"], "level": settings.log_level, "propagate": False},
+        "gunicorn.access": {"handlers": ["default"], "level": settings.log_level, "propagate": False},
+    },
+}

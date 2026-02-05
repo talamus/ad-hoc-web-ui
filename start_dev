@@ -1,0 +1,15 @@
+#!/usr/bin/env -S uv run python
+"""Development server - not included in production deployment."""
+import uvicorn
+from web.logging import LOG_CONFIG
+from web.config import settings
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "web.app:app",
+        host=settings.host,
+        port=settings.port,
+        reload=settings.reload,
+        reload_dirs=["web"] if settings.reload else None,
+        log_config=LOG_CONFIG,
+    )

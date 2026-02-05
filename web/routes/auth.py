@@ -1,22 +1,20 @@
+import logging
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import BaseModel
 from slowapi import Limiter
-from slowapi.util import get_ipaddr, get_remote_address
+from slowapi.util import get_ipaddr
 from sqlalchemy.orm import Session
 
 from ..auth import authenticate_user, create_access_token, get_current_user
 from ..config import settings
-from ..logging import get_logger
 from ..database import User, get_db
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/auth", tags=["authentication"])
-logger = get_logger(__name__)
-
-# Initialize rate limiter
-limiter = Limiter(key_func=get_remote_address)
+limiter = Limiter(key_func=get_ipaddr)
 
 
 class Token(BaseModel):

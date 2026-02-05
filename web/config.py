@@ -39,10 +39,7 @@ class Settings(BaseSettings):
     # Application Settings
     app_name: str = Field(default="Ad Hoc Web UI", description="Application name")
     log_level: str = Field(default="INFO", description="Logging level")
-    log_dir: Path = Field(
-        default=ROOT_PATH / "logs",
-        description="Logging directory path",
-    )
+    log_format: str = Field(default="default", description="Logging format (json or default)")
     servers_dir: Path = Field(
         default=ROOT_PATH / "servers",
         description="Server configs path",
