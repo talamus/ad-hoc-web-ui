@@ -53,7 +53,7 @@ class Settings(BaseSettings):
         description="Database URL",
     )
 
-    model_settings = SettingsConfigDict(
+    model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
